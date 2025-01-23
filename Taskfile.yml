@@ -1,0 +1,18 @@
+# https://taskfile.dev/usage/
+version: '3'
+tasks:
+  default: mix test
+  sh: iex --erl "-kernel shell_history enabled" -S mix
+  run: mix phx.server
+  test-all: task anvil && mix test --include external
+
+  setup: |
+    mix setup
+
+  # start foundry anvil testing node
+  anvil: |
+    cd ../../../hello-foundry
+    task anvil
+
+  # `Ctrl+b, d` to detach tmux session
+  anvil-sh: tmux attach -t anvil
