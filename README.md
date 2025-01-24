@@ -1,5 +1,10 @@
 <img height="120" align="left" src="https://github.com/ExWeb3/elixir_ethers/raw/main/assets/ethers_logo.png" alt="Ethers Elixir">
 
+# About this fork flow
+
+* Use `main` branch to sync with upstream changes
+* Use `dev` branch to merge local quick fixes and upstream changes
+
 # Elixir Ethers
 
 [![example workflow](https://github.com/ExWeb3/elixir_ethers/actions/workflows/elixir.yml/badge.svg)](https://github.com/ExWeb3/elixir_ethers)

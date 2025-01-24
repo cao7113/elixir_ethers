@@ -1,0 +1,20 @@
+# https://taskfile.dev/usage/
+version: '3'
+tasks:
+  default: mix test
+  sh: iex --erl "-kernel shell_history enabled" -S mix
+  run: mix phx.server
+  test-all: task anvil && mix test --include external
+  ## for test, why not ok when run: mix test???
+  test-prepare: mix run test/test_prepare.exs 
+
+  setup: |
+    mix setup
+ 
+  anvil: |
+    cd ../../../hello-evm
+    # start anvil testing node
+    task anvil
+
+  # `Ctrl+b, d` to detach tmux session
+  anvil-sh: tmux attach -t anvil
