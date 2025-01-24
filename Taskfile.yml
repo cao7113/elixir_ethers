@@ -5,13 +5,15 @@ tasks:
   sh: iex --erl "-kernel shell_history enabled" -S mix
   run: mix phx.server
   test-all: task anvil && mix test --include external
+  ## for test, why not ok when run: mix test???
+  test-prepare: mix run test/test_prepare.exs 
 
   setup: |
     mix setup
-
-  # start foundry anvil testing node
+ 
   anvil: |
-    cd ../../../hello-foundry
+    cd ../../../hello-evm
+    # start anvil testing node
     task anvil
 
   # `Ctrl+b, d` to detach tmux session
