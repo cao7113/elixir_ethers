@@ -37,6 +37,70 @@ defmodule Ethers.TransactionTest do
                Transaction.encode(transaction) |> Ethers.Utils.hex_encode()
     end
 
+    test "encode legacy tx" do
+      transaction = %Ethers.Transaction.Legacy{
+        nonce: 1,
+        gas_price: 2,
+        gas: 3,
+        value: 0,
+        input: ""
+        # to: nil,
+        # value: "0x0",
+        # data: "",
+        ## below not encode into rlp
+        # chain_id: "0x00539",
+        # from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+      }
+
+      encoded_tx = Transaction.encode(transaction)
+      # ref `Ethers.Transaction.Legacy to_rlp_list`
+      assert <<198, 1, 2, 3, 128, 128, 128>> == encoded_tx
+      assert "0xc6010203808080" == encoded_tx |> Ethers.Utils.hex_encode()
+    end
+
+    test "encode legacy type tx with chain_id" do
+      transaction =
+        %Ethers.Transaction.Legacy{
+          nonce: 1,
+          gas_price: 2,
+          gas: 3,
+          # to: nil,
+          value: 0,
+          input: "",
+          ## below not encode into rlp
+          chain_id: 1
+          # from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        }
+
+      encoded_tx = Transaction.encode(transaction)
+      # # EIP-155 encoding for signature mitigation intra-chain replay attack
+      # tx_list ++ [Utils.hex_to_integer!(chain_id), 0, 0]
+      assert <<201, 1, 2, 3, 128, 128, 128, 1, 128, 128>> == encoded_tx
+      assert "0xc9010203808080018080" == encoded_tx |> Ethers.Utils.hex_encode()
+    end
+
+    test "encode eip1559 type tx" do
+      transaction =
+        %Ethers.Transaction.Eip1559{
+          chain_id: 1,
+          nonce: 2,
+          max_priority_fee_per_gas: 3,
+          max_fee_per_gas: 4,
+          gas: 5,
+          value: 0,
+          input: ""
+          # to: Ethers.Types.default(:address)
+          # to: nil,
+          ## below not encode into rlp
+          # from: "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+        }
+
+      encoded_tx = Transaction.encode(transaction)
+      # prefix type <<2>>
+      assert <<2, 201, 1, 2, 3, 4, 5, 128, 128, 128, 192>> == encoded_tx
+      assert "0x02c90102030405808080c0" == encoded_tx |> Ethers.Utils.hex_encode()
+    end
+
     test "encodes a transaction with a blob" do
       transaction = %Ethers.Transaction.Eip4844{
         blob_versioned_hashes: [
